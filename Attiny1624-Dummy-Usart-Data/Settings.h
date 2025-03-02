@@ -49,5 +49,8 @@ void USART0_sendChar(char c);
 
 void USART0_sendString(char *str);
 
+void USART0_printf(const char *format, ...);
+
+uint8_t crc8_cdma2000(uint64_t data);
 
 #endif /* SETTINGS_H_ */

@@ -39,3 +39,12 @@ void USART0_sendString(char *str) {
         USART0_sendChar(str[i]); ///< Send each character of the string.
     }
 }
+
+void USART0_printf(const char *format, ...) {
+	char buffer[38]; ///< Temporary buffer to hold the formatted string.
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer, sizeof(buffer), format, args); ///< Format the string into the buffer.
+	va_end(args);
+	USART0_sendString(buffer); ///< Send the formatted string via USART0.
+}
