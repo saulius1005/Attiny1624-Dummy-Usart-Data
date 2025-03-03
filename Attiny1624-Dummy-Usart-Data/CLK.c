@@ -1,22 +1,31 @@
-/*
- * CLK.c
- *
- * Created: 2025-02-27 17:58:36
- *  Author: Saulius
- */ 
- #include "Settings.h"
+/**
+ * @file CLK.c
+ * @brief Clock initialization functions for the ATTiny1614 microcontroller.
+ * 
+ * This file contains functions for configuring the clock sources of the ATTiny1614. 
+ * Specifically, it includes the initialization of the internal high-frequency oscillator 
+ * (OSC20M) to run at 20 MHz, and ensures proper setup for full-speed operation.
+ * 
+ * @author Saulius
+ * @date 2025-02-27
+ */
+
+#include "Settings.h"
 
 /**
- * @brief Initializes the internal high-frequency oscillator (OSCHF).
+ * @brief Initializes the internal high-frequency oscillator (OSCHF) to 20 MHz.
  * 
- * This function configures the ATTiny1614's internal oscillator to run at 20 MHz. 
- * It ensures proper configuration of the clock source and disables the prescaler for full-speed operation. 
- * Note: For SO14 packages, enabling clock output (CLKOUT) is not possible due to the absence of a dedicated pin.
+ * This function configures the ATTiny1614's internal oscillator to operate at 20 MHz. 
+ * The configuration ensures that the clock source is set correctly, the prescaler is 
+ * disabled for full-speed operation, and the system waits for the oscillator to stabilize.
  * 
  * @details
  * - Configures the clock source to use the 20 MHz internal oscillator (OSC20M).
  * - Disables the clock prescaler to achieve full-speed operation.
- * - Waits for the oscillator configuration to stabilize before exiting.
+ * - Waits for the oscillator configuration to complete and stabilize.
+ * 
+ * @note For the SO14 package, enabling the clock output (CLKOUT) is not possible due to the 
+ *       lack of a dedicated pin for this function.
  */
 void CLOCK_INHF_clock_init() {
     /* Enable the internal oscillator with a frequency of 20 MHz. */

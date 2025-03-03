@@ -21,15 +21,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   8 .debug_abbrev 00001f3c  00000000  00000000  00003678  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   000008ee  00000000  00000000  000055b4  2**0
+  9 .debug_line   000008fc  00000000  00000000  000055b4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000001d8  00000000  00000000  00005ea4  2**2
+ 10 .debug_frame  000001d8  00000000  00000000  00005eb0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    000014a7  00000000  00000000  0000607c  2**0
+ 11 .debug_str    000014a7  00000000  00000000  00006088  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000060a  00000000  00000000  00007523  2**0
+ 12 .debug_loc    0000060a  00000000  00000000  0000752f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000070  00000000  00000000  00007b2d  2**0
+ 13 .debug_ranges 00000070  00000000  00000000  00007b39  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -107,8 +107,8 @@ Disassembly of section .text:
   b2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000000b6 <CLOCK_INHF_clock_init>:
- * - Disables the clock prescaler to achieve full-speed operation.
- * - Waits for the oscillator configuration to stabilize before exiting.
+ * @note For the SO14 package, enabling the clock output (CLKOUT) is not possible due to the 
+ *       lack of a dedicated pin for this function.
  */
 void CLOCK_INHF_clock_init() {
     /* Enable the internal oscillator with a frequency of 20 MHz. */
@@ -131,14 +131,15 @@ void CLOCK_INHF_clock_init() {
   ca:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <crc8_table+0x7f7615>
   ce:	80 fd       	sbrc	r24, 0
   d0:	fc cf       	rjmp	.-8      	; 0xca <CLOCK_INHF_clock_init+0x14>
+}
   d2:	08 95       	ret
 
 000000d4 <crc8_cdma2000>:
-	0xA7, 0x3C, 0x0A, 0x91, 0x66, 0xFD, 0xCB, 0x50,   0xBE, 0x25, 0x13, 0x88, 0x7F, 0xE4, 0xD2, 0x49,
-	0x95, 0x0E, 0x38, 0xA3, 0x54, 0xCF, 0xF9, 0x62,   0x8C, 0x17, 0x21, 0xBA, 0x4D, 0xD6, 0xE0, 0x7B
-};
-
-
+ * of the input data. The result is returned as a single byte (CRC value).
+ * 
+ * @param data The input data to calculate the CRC for.
+ * @return The CRC-8 checksum value for the data.
+ */
 uint8_t crc8_cdma2000(uint64_t data) {
   d4:	2f 92       	push	r2
   d6:	3f 92       	push	r3
@@ -171,9 +172,9 @@ uint8_t crc8_cdma2000(uint64_t data) {
  10c:	77 2e       	mov	r7, r23
  10e:	68 2e       	mov	r6, r24
  110:	59 2e       	mov	r5, r25
-	uint8_t crc = 0xFF;
-	size_t length = 0;
-	uint64_t temp = data;
+    uint8_t crc = 0xFF;    ///< Initial CRC value.
+    size_t length = 0;     ///< Length of the data in bytes.
+    uint64_t temp = data;
  112:	f2 2e       	mov	r15, r18
  114:	03 2f       	mov	r16, r19
  116:	14 2f       	mov	r17, r20
@@ -182,20 +183,22 @@ uint8_t crc8_cdma2000(uint64_t data) {
  11c:	b7 2f       	mov	r27, r23
  11e:	d8 2e       	mov	r13, r24
  120:	e9 2e       	mov	r14, r25
-};
-
-
+ * @param data The input data to calculate the CRC for.
+ * @return The CRC-8 checksum value for the data.
+ */
 uint8_t crc8_cdma2000(uint64_t data) {
-	uint8_t crc = 0xFF;
-	size_t length = 0;
+    uint8_t crc = 0xFF;    ///< Initial CRC value.
+    size_t length = 0;     ///< Length of the data in bytes.
  122:	e0 e0       	ldi	r30, 0x00	; 0
  124:	f0 e0       	ldi	r31, 0x00	; 0
-	uint64_t temp = data;
-	while (temp) {
+    uint64_t temp = data;
+
+    // Calculate the number of bytes in the data.
+    while (temp) {
  126:	14 c0       	rjmp	.+40     	; 0x150 <__EEPROM_REGION_LENGTH__+0x50>
-		length++;
+        length++;
  128:	31 96       	adiw	r30, 0x01	; 1
-		temp >>= 8;
+        temp >>= 8;
  12a:	2f 2d       	mov	r18, r15
  12c:	30 2f       	mov	r19, r16
  12e:	41 2f       	mov	r20, r17
@@ -214,12 +217,12 @@ uint8_t crc8_cdma2000(uint64_t data) {
  14a:	b7 2f       	mov	r27, r23
  14c:	d8 2e       	mov	r13, r24
  14e:	e9 2e       	mov	r14, r25
+    uint8_t crc = 0xFF;    ///< Initial CRC value.
+    size_t length = 0;     ///< Length of the data in bytes.
+    uint64_t temp = data;
 
-uint8_t crc8_cdma2000(uint64_t data) {
-	uint8_t crc = 0xFF;
-	size_t length = 0;
-	uint64_t temp = data;
-	while (temp) {
+    // Calculate the number of bytes in the data.
+    while (temp) {
  150:	2f 2d       	mov	r18, r15
  152:	30 2f       	mov	r19, r16
  154:	41 2f       	mov	r20, r17
@@ -239,11 +242,12 @@ uint8_t crc8_cdma2000(uint64_t data) {
  172:	39 2c       	mov	r3, r9
  174:	28 2c       	mov	r2, r8
  176:	1a c0       	rjmp	.+52     	; 0x1ac <__EEPROM_REGION_LENGTH__+0xac>
-		length++;
-		temp >>= 8;
-	}
-	while (length--) {
-		crc = crc8_table[crc ^ ((data >> (length * 8)) & 0xFF)];
+        temp >>= 8;
+    }
+
+    // Process each byte in the data.
+    while (length--) {
+        crc = crc8_table[crc ^ ((data >> (length * 8)) & 0xFF)];
  178:	8d 01       	movw	r16, r26
  17a:	00 0f       	add	r16, r16
  17c:	11 1f       	adc	r17, r17
@@ -268,21 +272,21 @@ uint8_t crc8_cdma2000(uint64_t data) {
  1a4:	f5 47       	sbci	r31, 0x75	; 117
  1a6:	80 81       	ld	r24, Z
  1a8:	8a 87       	std	Y+10, r24	; 0x0a
-	uint64_t temp = data;
-	while (temp) {
-		length++;
-		temp >>= 8;
-	}
-	while (length--) {
+        length++;
+        temp >>= 8;
+    }
+
+    // Process each byte in the data.
+    while (length--) {
  1aa:	fd 01       	movw	r30, r26
  1ac:	df 01       	movw	r26, r30
  1ae:	11 97       	sbiw	r26, 0x01	; 1
  1b0:	ef 2b       	or	r30, r31
  1b2:	11 f7       	brne	.-60     	; 0x178 <__EEPROM_REGION_LENGTH__+0x78>
  1b4:	8a 85       	ldd	r24, Y+10	; 0x0a
-		crc = crc8_table[crc ^ ((data >> (length * 8)) & 0xFF)];
-	}
-	return crc;
+        crc = crc8_table[crc ^ ((data >> (length * 8)) & 0xFF)];
+    }
+    return crc;  ///< Return the calculated CRC.
 }
  1b6:	2b 96       	adiw	r28, 0x0b	; 11
  1b8:	cd bf       	out	0x3d, r28	; 61
@@ -308,38 +312,39 @@ uint8_t crc8_cdma2000(uint64_t data) {
  1e0:	08 95       	ret
 
 000001e2 <GPIO_init>:
- * - PB2 as TX for dummy data sending with pull-up enabled.
- * - PB3 as RX (MISO, MT6701 DO) with pull-up enabled.
- * - PA7 as SS (MT6701 CSN) output, initially set high.
+ * - Configures the default routing for USART0.
+ * - Sets PB2 as the transmission (TX) pin for data sending.
+ * - Enables the pull-up resistor on PB2.
  */
 void GPIO_init(){
-    PORTMUX.USARTROUTEA = PORTMUX_USART0_DEFAULT_gc; ///< Set USART0 to default pins
+    PORTMUX.USARTROUTEA = PORTMUX_USART0_DEFAULT_gc; ///< Set USART0 to default pins for communication.
  1e2:	10 92 e2 05 	sts	0x05E2, r1	; 0x8005e2 <crc8_table+0x7f7b94>
 
-    PORTB.DIRSET = PIN2_bm; ///< Set PB2 as TX for dummy data sending
+    PORTB.DIRSET = PIN2_bm; ///< Set PB2 as TX for data transmission.
  1e6:	e0 e2       	ldi	r30, 0x20	; 32
  1e8:	f4 e0       	ldi	r31, 0x04	; 4
  1ea:	84 e0       	ldi	r24, 0x04	; 4
  1ec:	81 83       	std	Z+1, r24	; 0x01
-    PORTB.PIN2CTRL = PORT_PULLUPEN_bm; ///< Enable pull-up for PB2 (USART0 TX)
+    PORTB.PIN2CTRL = PORT_PULLUPEN_bm; ///< Enable pull-up resistor for PB2 (USART0 TX pin).
  1ee:	88 e0       	ldi	r24, 0x08	; 8
  1f0:	82 8b       	std	Z+18, r24	; 0x12
  1f2:	08 95       	ret
 
 000001f4 <main>:
-
-		uint64_t combined = 0;
-
+ *
+ * @return This function does not return. It runs indefinitely in a while loop.
+ */
 int main(void)
 {
-    CLOCK_INHF_clock_init(); ///< Initialize system clock
+    CLOCK_INHF_clock_init(); ///< Initialize system clock.
  1f4:	0e 94 5b 00 	call	0xb6	; 0xb6 <CLOCK_INHF_clock_init>
-    GPIO_init(); ///< Initialize GPIO pins
+    GPIO_init(); ///< Initialize GPIO pins for USART0 communication.
  1f8:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <GPIO_init>
-    USART0_init(); ///< Initialize USART0 for SPI communication
+    USART0_init(); ///< Initialize USART0 for SPI communication.
  1fc:	0e 94 a0 01 	call	0x340	; 0x340 <USART0_init>
 
-	combined = ((uint64_t)a << 40) | ((uint64_t)b << 24) | ((uint32_t)c << 12) | ((uint16_t)d << 4) | e;
+    // Combine all data into a single 64-bit value for transmission
+    combined = ((uint64_t)a << 40) | ((uint64_t)b << 24) | ((uint32_t)c << 12) | ((uint16_t)d << 4) | e;
  200:	80 91 06 38 	lds	r24, 0x3806	; 0x803806 <a>
  204:	90 91 07 38 	lds	r25, 0x3807	; 0x803807 <a+0x1>
  208:	28 2f       	mov	r18, r24
@@ -415,12 +420,12 @@ int main(void)
  2ae:	d0 93 0d 38 	sts	0x380D, r29	; 0x80380d <__data_end+0x5>
  2b2:	c0 93 0e 38 	sts	0x380E, r28	; 0x80380e <__data_end+0x6>
  2b6:	f0 93 0f 38 	sts	0x380F, r31	; 0x80380f <__data_end+0x7>
-
-    while (1) 
-    {
-		//aaaa- elevacijos kampas, bbbb-azimuto kampas, ccc sp-átampa, dd sp-srovë, e y min + y max (0-neivienas, 1-min arba 2-max)
-       // USART0_sendString("<aaaabbbbcccdde>\r\n"); //18 simboliø
-		USART0_printf("<%04x%04x%03x%02x%x%02x>\r\n", (uint16_t)a, (uint16_t)b, (uint16_t)c, (uint8_t)d, (uint8_t)e, (uint8_t)crc8_cdma2000(combined)); //imituojam 89.99 elevacijos kampa, 359.99 azimuto kampa,spU 259.1V,spI 10.5A
+                        (uint16_t)a,           ///< Elevation angle (4 digits)
+                        (uint16_t)b,           ///< Azimuth angle (4 digits)
+                        (uint16_t)c,           ///< Voltage (3 digits)
+                        (uint8_t)d,            ///< Current (2 digits)
+                        (uint8_t)e,            ///< End switch status (1 digit)
+                        (uint8_t)crc8_cdma2000(combined)); ///< CRC value (1 byte)
  2ba:	20 91 08 38 	lds	r18, 0x3808	; 0x803808 <__data_end>
  2be:	30 91 09 38 	lds	r19, 0x3809	; 0x803809 <__data_end+0x1>
  2c2:	40 91 0a 38 	lds	r20, 0x380A	; 0x80380a <__data_end+0x2>
@@ -430,6 +435,12 @@ int main(void)
  2d2:	80 91 0e 38 	lds	r24, 0x380E	; 0x80380e <__data_end+0x6>
  2d6:	90 91 0f 38 	lds	r25, 0x380F	; 0x80380f <__data_end+0x7>
  2da:	0e 94 6a 00 	call	0xd4	; 0xd4 <crc8_cdma2000>
+    combined = ((uint64_t)a << 40) | ((uint64_t)b << 24) | ((uint32_t)c << 12) | ((uint16_t)d << 4) | e;
+
+    while (1) 
+    {
+        // Send the combined data over USART0 in a formatted string
+        USART0_printf("<%04x%04x%03x%02x%x%02x>\r\n", 
  2de:	1f 92       	push	r1
  2e0:	8f 93       	push	r24
  2e2:	80 91 00 38 	lds	r24, 0x3800	; 0x803800 <__DATA_REGION_ORIGIN__>
@@ -478,12 +489,12 @@ int main(void)
  33e:	bd cf       	rjmp	.-134    	; 0x2ba <main+0xc6>
 
 00000340 <USART0_init>:
- *  Author: Saulius
- */ 
-#include "Settings.h"
-
+ * - Double-speed operation for higher communication speed.
+ * - Transmitter enabled.
+ * - No parity, 8 data bits, and 1 stop bit.
+ */
 void USART0_init() {
-    USART0.BAUD = (uint16_t)USART0_BAUD_RATE(500000); ///< Set baud rate to 0.25 Mbps.
+    USART0.BAUD = (uint16_t)USART0_BAUD_RATE(500000); ///< Set baud rate to 0.5 Mbps.
  340:	e0 e0       	ldi	r30, 0x00	; 0
  342:	f8 e0       	ldi	r31, 0x08	; 8
  344:	80 e4       	ldi	r24, 0x40	; 64
@@ -561,7 +572,11 @@ void USART0_sendString(char *str) {
  39e:	08 95       	ret
 
 000003a0 <USART0_printf>:
-
+ * and sending the formatted string via USART0. It is similar to `printf` but sends
+ * the result directly to the USART0 output.
+ * 
+ * @param format The format string, followed by the variable arguments.
+ */
 void USART0_printf(const char *format, ...) {
  3a0:	cf 93       	push	r28
  3a2:	df 93       	push	r29
@@ -577,20 +592,21 @@ void USART0_printf(const char *format, ...) {
  3b6:	41 91       	ld	r20, Z+
  3b8:	51 91       	ld	r21, Z+
  3ba:	9f 01       	movw	r18, r30
-	char buffer[38]; ///< Temporary buffer to hold the formatted string.
-	va_list args;
-	va_start(args, format);
-	vsnprintf(buffer, sizeof(buffer), format, args); ///< Format the string into the buffer.
+    char buffer[38]; ///< Temporary buffer to hold the formatted string.
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args); ///< Format the string into the buffer.
  3bc:	66 e2       	ldi	r22, 0x26	; 38
  3be:	70 e0       	ldi	r23, 0x00	; 0
  3c0:	ce 01       	movw	r24, r28
  3c2:	01 96       	adiw	r24, 0x01	; 1
  3c4:	0e 94 31 02 	call	0x462	; 0x462 <vsnprintf>
-	va_end(args);
-	USART0_sendString(buffer); ///< Send the formatted string via USART0.
+    va_end(args);
+    USART0_sendString(buffer); ///< Send the formatted string via USART0.
  3c8:	ce 01       	movw	r24, r28
  3ca:	01 96       	adiw	r24, 0x01	; 1
  3cc:	0e 94 b2 01 	call	0x364	; 0x364 <USART0_sendString>
+}
  3d0:	a6 96       	adiw	r28, 0x26	; 38
  3d2:	cd bf       	out	0x3d, r28	; 61
  3d4:	de bf       	out	0x3e, r29	; 62
